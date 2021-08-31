@@ -20,31 +20,30 @@ mat(
     ]
 ).
 
-% Metodos para os pontos
-% Retonar o valor de um ponto
+% Cria um ponto
 mponto(V, G, ponto(V, G)) :- !.
 
-% -- Retornar o grupo de um ponto
+% Cria uma coordenada
 mcoord(I, J, coord(I, J)) :- !.
 
-% imprime o valor V de um ponto
+% Mostrar o valor de um ponto
 displayponto(ponto(V, _)) :- write(V), tab(1).
 
-% imprime uma linha
+% Mostrar uma linha da matriz
 mostrarLinha([]) :- nl.
 mostrarLinha([H|T]) :-
     displayponto(H),
     mostrarLinha(T),
     !.
 
-% imprime uma matriz
+% Mostrar toda matriz
 mostrarMatriz([]).
 mostrarMatriz([H|T]) :- 
     mostrarLinha(H),
     mostrarMatriz(T),
     !.
 
-% retorna o ponto P da matriz M na posição I, J
+% Dado uma cordenada na posicao I, J retorna o valor do ponto
 getp(coord(I, J), M, P) :-
     (
         length(M, Z1),
@@ -61,7 +60,9 @@ getp(coord(I, J), M, P) :-
     mponto(-1, -1, P),
     !.
 
-% substitui o elemento de indice K por P em uma lista
+% Metodo para troca de linha da matriz de elementos em uma dada posição
+% Recebe o valor da nova linha da matriz -> K
+% Recebe o valor da nova coluna da matriz -> P
 replace([_|T], K, P, [P|T]) :-
     K == 0,
     !.
@@ -83,7 +84,7 @@ getv(ponto(V, _), V).
 getg(ponto(_, G), G).
 
 % retorna uma lista de todas as coordenadas de uma matriz M que fazem
-% parte do grupo do ponto na corrdenada C
+% parte do grupo do ponto na cordenada C
 getgp(C, M, R) :-
     getp(C, M, P),
     getg(P, G),
@@ -150,10 +151,14 @@ emptyslot(M, C) :-
     );
     mcoord(-1, -1, C).
 
+% Este metodo pegamos dessa apresentação
+% https://hudsoncosta.files.wordpress.com/2012/11/listas_em_prolog.pdf
 conc([], L, L).
 conc([X | L1], L2, [X | L3]):-
 conc(L1, L2, L3). 
 
+% https://hudsoncosta.files.wordpress.com/2012/11/listas_em_prolog.pdf
+% Este metodo pegamos dessa apresentação
 inverter([], []). % A inversão de uma lista vazia é a própria lista vazia.
 inverter([X|Y], Z):- % A inversão de uma lista não-vazia é a inversão de
 inverter(Y, Y1), % seu corpo e a concatenação deste corpo invertido
@@ -173,7 +178,7 @@ numValidos(C, M, S) :-
     ), 
     inverter(I, S).
 
-% resolucionar o puzzle
+% Metodo 
 solucionar(coord(-1, -1), M, _, M) :- mostrarMatriz(M).
 solucionar(_, _, [], []).
 solucionar(C, M, [H|T], R) :-
@@ -194,7 +199,7 @@ solucionar(C, M, [H|T], R) :-
         R is R2
     ).
 
-% entrada para solucionar
+% Metodo principal
 soluciona :-
     mat(M),
     emptyslot(M, C),
