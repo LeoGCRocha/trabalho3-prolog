@@ -1,36 +1,47 @@
-% tabuleiro
+% Codigo desenvolvido por Leonardo e Andre.
+% Matriculas: 19102922 e 19150871.
+% Regras:
+% 1) Insira um número em cada célula do diagrama de forma que cada região de tamanho N contenha cada número de 1 a N exatamente uma vez.
+% 2) Os números nas células ortogonalmente adjacentes devem ser diferentes.
+% 3) Se duas células estiverem verticalmente adjacentes na mesma região, o número da célula superior deve ser maior do que o número da célula inferior.
+
+% Docs:https://docs.google.com/document/d/1ThmNWIclKiW8nQZP8xoloydWxWW5NYXhw18YLgRHL2A/edit?usp=sharing
+
+% Sistemas de pontos, com uma tupla onde primeiro ponto é o valor e o segundo ponto é seu grupo. parametros: (valor numerico, grupo)
+% Campos vazios seram representados com 0
 mat(
     [
-    [point(0, 0), point(0, 1), point(4, 1), point(0, 1),  point(2, 5),  point(0, 4)],
-    [point(0, 0), point(0, 2), point(3, 1), point(0, 5),  point(0, 5),  point(0, 5)],
-    [point(1, 0), point(4, 0), point(0, 6), point(4, 5),  point(0, 8),  point(0, 8)],
-    [point(0, 12), point(5, 11), point(0, 6), point(0, 7), point(0, 7), point(2,8)],
-    [point(0, 12), point(0, 11), point(0, 11), point(0, 10),  point(3, 10),  point(0, 8)],
-    [point(6, 11), point(2, 11), point(0, 11), point(2, 10),  point(0, 10),  point(5, 10)]
+    [ponto(0, 0), ponto(0, 1), ponto(4, 1), ponto(0, 1),  ponto(2, 5),  ponto(0, 4)],
+    [ponto(0, 0), ponto(0, 2), ponto(3, 1), ponto(0, 5),  ponto(0, 5),  ponto(0, 5)],
+    [ponto(1, 0), ponto(4, 0), ponto(0, 6), ponto(4, 5),  ponto(0, 8),  ponto(0, 8)],
+    [ponto(0, 12), ponto(5, 11), ponto(0, 6), ponto(0, 7), ponto(0, 7), ponto(2,8)],
+    [ponto(0, 12), ponto(0, 11), ponto(0, 11), ponto(0, 10),  ponto(3, 10),  ponto(0, 8)],
+    [ponto(6, 11), ponto(2, 11), ponto(0, 11), ponto(2, 10),  ponto(0, 10),  ponto(5, 10)]
     ]
 ).
 
-% constroi um ponto com valor V e grupo G
-mpoint(V, G, point(V, G)) :- !.
+% Metodos para os pontos
+% Retonar o valor de um ponto
+mponto(V, G, ponto(V, G)) :- !.
 
-% constroi uma coordenada com valores I e J
+% -- Retornar o grupo de um ponto
 mcoord(I, J, coord(I, J)) :- !.
 
 % imprime o valor V de um ponto
-displaypoint(point(V, _)) :- write(V), tab(1).
+displayponto(ponto(V, _)) :- write(V), tab(1).
 
 % imprime uma linha
-displayline([]) :- nl.
-displayline([H|T]) :-
-    displaypoint(H),
-    displayline(T),
+mostrarLinha([]) :- nl.
+mostrarLinha([H|T]) :-
+    displayponto(H),
+    mostrarLinha(T),
     !.
 
 % imprime uma matriz
-displaymatrix([]).
-displaymatrix([H|T]) :- 
-    displayline(H),
-    displaymatrix(T),
+mostrarMatriz([]).
+mostrarMatriz([H|T]) :- 
+    mostrarLinha(H),
+    mostrarMatriz(T),
     !.
 
 % retorna o ponto P da matriz M na posição I, J
@@ -47,7 +58,7 @@ getp(coord(I, J), M, P) :-
         nth0(J, Li, P),
         !
     );
-    mpoint(-1, -1, P),
+    mponto(-1, -1, P),
     !.
 
 % substitui o elemento de indice K por P em uma lista
@@ -67,9 +78,9 @@ setp(coord(I, J), P, M, NM) :-
     !.
 
 % retorna o valor V de um ponto
-getv(point(V, _), V).
+getv(ponto(V, _), V).
 % retorna o grupo G de um ponto
-getg(point(_, G), G).
+getg(ponto(_, G), G).
 
 % retorna uma lista de todas as coordenadas de uma matriz M que fazem
 % parte do grupo do ponto na corrdenada C
@@ -96,30 +107,30 @@ getneib(coord(I, J), [C1, C2, C3, C4]) :-
     mcoord(I, B2, C4), B2 is J - 1.
 
 % verifica se o valor N ainda não existe no grupo da coordenada C
-verifygroup(C, N, M) :-
+verificagrupo(C, N, M) :-
     getgp(C, M, GP),
-    verifylist(GP, N, M),
+    verificarlista(GP, N, M),
     !.
 
 % verifica se o valor N ainda não existe nas adjacencias de C
-verifyneib(C, N, M) :-
+verificaradj(C, N, M) :-
     getneib(C, NB),
-    verifylist(NB, N, M),
+    verificarlista(NB, N, M),
     !.
 
 % verifica se há um valor N em uma lista
-verifylist([], _, _).
-verifylist([H|T], N, M) :-
+verificarlista([], _, _).
+verificarlista([H|T], N, M) :-
     getp(H, M, P),
     getv(P, V),
     V \== N,
-    verifylist(T, N, M),
+    verificarlista(T, N, M),
     !.
 
 % verifica se um valor N pode ser inserido na coordenada C de uma matriz M
 verify(C, N, M) :-
-    verifygroup(C, N, M),
-    verifyneib(C, N, M),
+    verificagrupo(C, N, M),
+    verificaradj(C, N, M),
     !.
 
 % retorna uma coordenada C ainda não preenchida da matriz M
@@ -149,7 +160,7 @@ inverter(Y, Y1), % seu corpo e a concatenação deste corpo invertido
 conc(Y1, [X], Z). % com a cabeça da lista original.
 
 % retorna uma lista S de todas as soluções possiveis da coordenada C
-solat(C, M, S) :-
+numValidos(C, M, S) :-
     getgp(C, M, GP),
     length(GP, Max),
     findall(
@@ -162,20 +173,20 @@ solat(C, M, S) :-
     ), 
     inverter(I, S).
 
-% resolve o puzzle
-solve(coord(-1, -1), M, _, M) :- displaymatrix(M).
-solve(_, _, [], []).
-solve(C, M, [H|T], R) :-
+% resolucionar o puzzle
+solucionar(coord(-1, -1), M, _, M) :- mostrarMatriz(M).
+solucionar(_, _, [], []).
+solucionar(C, M, [H|T], R) :-
     getp(C, M, P1),
     getg(P1, G),
-    mpoint(H, G, P),
+    mponto(H, G, P),
     setp(C, P, M, MN),
     emptyslot(MN, C2),
-    solat(C2, MN, S),
-    solve(C2, MN, S, R2),
+    numValidos(C2, MN, S),
+    solucionar(C2, MN, S, R2),
     (
         length(R2, 0),
-        solve(C, M, T, _)
+        solucionar(C, M, T, _)
     );
     (
         length(R2, T),
@@ -183,10 +194,10 @@ solve(C, M, [H|T], R) :-
         R is R2
     ).
 
-% entrada para solve
-solveit :-
+% entrada para solucionar
+soluciona :-
     mat(M),
     emptyslot(M, C),
-    solat(C, M, S),
-    solve(C, M, S, _),
+    numValidos(C, M, S),
+    solucionar(C, M, S, _),
     !.
