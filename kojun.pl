@@ -101,7 +101,7 @@ getgp(C, M, R) :-
     ).
 
 % retorna uma lista das coordenadas adjacentes a coord(i, J)
-getneib(coord(I, J), [C1, C2, C3, C4]) :-
+pegaradj(coord(I, J), [C1, C2, C3, C4]) :-
     mcoord(A1, J, C1), A1 is I + 1,
     mcoord(A2, J, C2), A2 is I - 1,
     mcoord(I, B1, C3), B1 is J + 1,
@@ -115,7 +115,7 @@ verificagrupo(C, N, M) :-
 
 % verifica se o valor N ainda não existe nas adjacencias de C
 verificaradj(C, N, M) :-
-    getneib(C, NB),
+    pegaradj(C, NB),
     verificarlista(NB, N, M),
     !.
 
@@ -129,13 +129,13 @@ verificarlista([H|T], N, M) :-
     !.
 
 % verifica se um valor N pode ser inserido na coordenada C de uma matriz M
-verify(C, N, M) :-
+verifica(C, N, M) :-
     verificagrupo(C, N, M),
     verificaradj(C, N, M),
     !.
 
 % retorna uma coordenada C ainda não preenchida da matriz M
-emptyslot(M, C) :-
+posicaovazia(M, C) :-
     (
         nth0(0, M, L),
         length(M, MI1),
@@ -172,7 +172,7 @@ numValidos(C, M, S) :-
         N,
         (
             between(1, Max, N),
-            verify(C, N, M)
+            verifica(C, N, M)
         ),
         I
     ), 
@@ -186,7 +186,7 @@ solucionar(C, M, [H|T], R) :-
     getg(P1, G),
     mponto(H, G, P),
     setp(C, P, M, MN),
-    emptyslot(MN, C2),
+    posicaovazia(MN, C2),
     numValidos(C2, MN, S),
     solucionar(C2, MN, S, R2),
     (
@@ -202,7 +202,7 @@ solucionar(C, M, [H|T], R) :-
 % Metodo principal
 soluciona :-
     mat(M),
-    emptyslot(M, C),
+    posicaovazia(M, C),
     numValidos(C, M, S),
     solucionar(C, M, S, _),
     !.
